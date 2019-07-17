@@ -1,0 +1,90 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: VPC Endpoints
+
+Parameters:
+  routeStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the Routes
+
+  subnetStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the Subnets
+
+  vpcStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the VPC
+
+Resources:
+  cfnEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateA
+        - Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateB
+        - Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateC
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .cloudformation
+      VpcEndpointType: Interface
+      VpcId:
+        Fn::ImportValue: !Sub ${vpcStackName}-vpcId
+
+  dynamoEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      RouteTableIds:
+        - Fn::ImportValue: !Sub ${routeStackName}-routeTablePublic
+        - Fn::ImportValue: !Sub ${routeStackName}-routeTablePrivate
+        - Fn::ImportValue: !Sub ${routeStackName}-routeTableRestricted
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .dynamodb
+      VpcEndpointType: Gateway
+      VpcId:
+        Fn::ImportValue: !Sub ${vpcStackName}-vpcId
+
+  kmsEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      SubnetIds:
+        - Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateA
+        - Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateB
+        - Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateC
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .kms
+      VpcEndpointType: Interface
+      VpcId:
+        Fn::ImportValue: !Sub ${vpcStackName}-vpcId
+
+  s3Endpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action:
+              - 's3:*'
+            Resource:
+              - 'arn:aws:s3:::*'
+      RouteTableIds:
+        - Fn::ImportValue: !Sub ${routeStackName}-routeTablePublic
+        - Fn::ImportValue: !Sub ${routeStackName}-routeTablePrivate
+        - Fn::ImportValue: !Sub ${routeStackName}-routeTableRestricted
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .s3
+      VpcEndpointType: Gateway
+      VpcId:
+        Fn::ImportValue: !Sub ${vpcStackName}-vpcId
