@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Default VPC Security Group
+
+Parameters:
+  name:
+    Type: String
+
+  vpcStackName:
+    Type: String
+    Description: VPC Stack
+
+Resources:
+  vpcSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: VPC-Wide Security Group
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      SecurityGroupIngress:
+        -
+          IpProtocol: -1
+          FromPort: 0
+          ToPort: 65535
+          CidrIp:
+            Fn::ImportValue: !Sub '${vpcStackName}-vpcCidr'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-VPC-SG'
+
+Outputs:
+  vpcSecurityGroup:
+    Value: !Ref vpcSG
+    Export:
+      Name: !Sub ${AWS::StackName}-vpcSecurityGroup
+
+  stackName:
+    Value: !Sub ${AWS::StackName}
+
+

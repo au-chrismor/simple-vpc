@@ -1,0 +1,45 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Create a VPC.
+
+Parameters:
+  cidrBlock:
+    Description: The CIDR block for the VPC.
+    Type: String
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    MaxLength: 18
+    MinLength: 9
+  
+  name:
+    Description: Deployment Name
+    Type: String
+  
+Resources:
+  vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref cidrBlock
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: !Sub ${name}-vpc
+
+Outputs:
+  vpcId:
+    Description: The VPC ID
+    Value: !Ref vpc
+    Export:
+      Name: !Sub "${AWS::StackName}-vpcId"
+  vpcCidr:
+    Description: CIDR Range for the VPC
+    Value: !Ref cidrBlock
+    Export:
+      Name: !Sub "${AWS::StackName}-vpcCidr"
+  vpcRegion:
+    Description: AWS Region for the VPC
+    Value: !Ref AWS::Region
+    Export:
+      Name: !Sub "${AWS::StackName}-vpcRegion"

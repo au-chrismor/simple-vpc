@@ -1,0 +1,10 @@
+---
+- include_tasks: vpc-vpc.yml
+- include_tasks: vpc-flowlogs.yml
+- include_tasks: vpc-subnets.yml
+- include_tasks: vpc-nacls.yml
+- include_tasks: vpc-igw.yml
+- include_tasks: vpc-nat.yml
+- include_tasks: vpc-routes.yml
+- include_tasks: vpc-route53.yml
+- include_tasks: vpc-security.yml

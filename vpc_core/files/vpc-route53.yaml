@@ -1,0 +1,42 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+#
+# This template creates a private DNS zone
+#
+
+Description: Create Private DNS Zone
+
+Parameters:
+  vpcStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the VPC
+  zoneName:
+    Type: String
+    Description: Name of the hosted zone
+
+
+Resources:
+  hostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      HostedZoneConfig:
+        Comment: Private VPC DNS Zone
+      Name: !Ref zoneName
+      VPCs:
+        -
+          VPCId:
+            Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+          VPCRegion:
+            Fn::ImportValue: !Sub '${vpcStackName}-vpcRegion'
+
+Outputs:
+  zoneId:
+    Value: !Ref hostedZone
+    Export:
+      Name: !Sub '${AWS::StackName}-zoneId'
+
+  zoneName:
+    Value: !Ref zoneName
+    Export:
+      Name: !Sub '${AWS::StackName}-zoneName'

@@ -1,0 +1,408 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+#
+# This template creates VPC Subnets using the following structure:
+#   - Public (can be surfaced outside the VPC)
+#   - Private (application services)
+#   - Restricted (database layers)
+#
+
+Description: Create VPC Subnets
+
+Parameters:
+  name:
+    Type: String
+
+  privACidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Private Subnet A
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  privBCidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Private Subnet B
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  privCCidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Private Subnet C
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  pubACidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Public Subnet A
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  pubBCidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Public Subnet B
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  pubCCidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Public Subnet C
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  restrACidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Restricted Subnet A
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  restrBCidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Restricted Subnet B
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  restrCCidr:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    Description: CIDR Range for Restricted Subnet C
+    MaxLength: 18
+    MinLength: 9
+    Type: String
+
+  vpcStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the VPC
+
+Resources:
+  # Private Subnet A
+  subnetPrivateA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref privACidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-PRIVATE-A'
+
+  # Private Subnet B
+  subnetPrivateB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref privBCidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-PRIVATE-B'
+
+  # Private Subnet C
+  subnetPrivateC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref privCCidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-PRIVATE-C'
+
+  # Public Subnet A
+  subnetPublicA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref pubACidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-PUBLIC-A'
+
+  # Public Subnet B
+  subnetPublicB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref pubBCidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-PUBLIC-B'
+
+  # Public Subnet C
+  subnetPublicC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref pubCCidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-PUBLIC-C'
+
+  # Restricted Subnet A
+  subnetRestrictedA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref restrACidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-RESTRICTED-A'
+
+  # Restricted Subnet B
+  subnetRestrictedB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref restrBCidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-RESTRICTED-B'
+
+  # Restricted Subnet C
+  subnetRestrictedC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: !Ref AWS::Region
+      MapPublicIpOnLaunch: false
+      CidrBlock: !Ref restrCCidr
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      Tags:
+        - Key: Name
+          Value:
+            !Join
+              - ''
+              - - !Ref name
+                - '-RESTRICTED-C'
+
+  # Private Route Table
+#  privateSubnetRouteTable:
+#    Type: AWS::EC2::RouteTable
+#    Properties:
+#      VpcId:
+#        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+#
+#  routeTableAssociationPrivateA:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetPrivateA
+#    Properties:
+#      RouteTableId: !Ref 'privateSubnetRouteTable'
+#      SubnetId: !Ref 'subnetPrivateA'
+#
+#  routeTableAssociationPrivateB:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetPrivateB
+#    Properties:
+#      RouteTableId: !Ref 'privateSubnetRouteTable'
+#      SubnetId: !Ref 'subnetPrivateB'
+#
+#  routeTableAssociationPrivateC:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetPrivateC
+#    Properties:
+#      RouteTableId: !Ref 'privateSubnetRouteTable'
+#      SubnetId: !Ref 'subnetPrivateC'
+#
+#  # Public Route Table
+#  publicSubnetRouteTable:
+#    Type: AWS::EC2::RouteTable
+#    Properties:
+#      VpcId:
+#        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+#
+#  routeTableAssociationPublicA:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetPublicA
+#    Properties:
+#      RouteTableId: !Ref 'publicSubnetRouteTable'
+#      SubnetId: !Ref 'subnetPublicA'
+#
+#  routeTableAssociationPublicB:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetPublicB
+#    Properties:
+#      RouteTableId: !Ref 'publicSubnetRouteTable'
+#      SubnetId: !Ref 'subnetPublicB'
+#
+#  routeTableAssociationPublicC:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetPublicC
+#    Properties:
+#      RouteTableId: !Ref 'publicSubnetRouteTable'
+#      SubnetId: !Ref 'subnetPublicC'
+#
+#  # Restricted Route Table
+#  restrictedSubnetRouteTable:
+#    Type: AWS::EC2::RouteTable
+#    Properties:
+#      VpcId:
+#        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+#
+#  routeTableAssociationRestrictedA:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetRestrictedA
+#    Properties:
+#      RouteTableId: !Ref 'restrictedSubnetRouteTable'
+#      SubnetId: !Ref 'subnetRestrictedA'
+#
+#  routeTableAssociationRestrictedB:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetRestrictedB
+#    Properties:
+#      RouteTableId: !Ref 'restrictedSubnetRouteTable'
+#      SubnetId: !Ref 'subnetRestrictedB'
+#
+#  routeTableAssociationRestrictedC:
+#    Type: AWS::EC2::SubnetRouteTableAssociation
+#    DependsOn: subnetRestrictedC
+#    Properties:
+#      RouteTableId: !Ref 'restrictedSubnetRouteTable'
+#      SubnetId: !Ref 'subnetRestrictedC'
+
+Outputs:
+  subnetPrivateA:
+    Value: !Ref subnetPrivateA
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetPrivateA'
+
+  subnetPrivateB:
+    Value: !Ref subnetPrivateB
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetPrivateB'
+
+  subnetPrivateC:
+    Value: !Ref subnetPrivateC
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetPrivateC'
+
+  subnetPublicA:
+    Value: !Ref subnetPublicA
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetPublicA'
+
+  subnetPublicB:
+    Value: !Ref subnetPublicB
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetPublicB'
+
+  subnetPublicC:
+    Value: !Ref subnetPublicC
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetPublicC'
+
+  subnetRestrictedA:
+    Value: !Ref subnetRestrictedA
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetRestrictedA'
+
+  subnetRestrictedB:
+    Value: !Ref subnetRestrictedB
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetRestrictedB'
+
+  subnetRestrictedC:
+    Value: !Ref subnetRestrictedC
+    Export:
+      Name: !Sub '${AWS::StackName}-subnetRestrictedC'
+
+#  publicSubnetRouteTable:
+#    Value: !Ref publicSubnetRouteTable
+#    Export:
+#      Name: !Sub '${AWS::StackName}-publicSubnetRouteTable'
+
+#  privateSubnetRouteTable:
+#    Value: !Ref privateSubnetRouteTable
+#    Export:
+#      Name: !Sub '${AWS::StackName}-privateSubnetRouteTable'
+
+#  restrictedSubnetRouteTable:
+#    Value: !Ref restrictedSubnetRouteTable
+#    Export:
+#      Name: !Sub '${AWS::StackName}-restrictedSubnetRouteTable'

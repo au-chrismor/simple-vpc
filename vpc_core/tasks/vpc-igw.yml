@@ -1,0 +1,12 @@
+---
+- name: Create VPC Internet Gateway
+  cloudformation:
+    stack_name: '{{ prefix }}-{{ env }}-vpc-igw'
+    state: 'present'
+    region: '{{ aws_region }}'
+    disable_rollback: False
+    template: 'vpc_core/files/vpc-igw.yaml'
+    template_parameters:
+      name: '{{ prefix }}-{{ env }}'
+      subnetStackName: '{{ prefix }}-{{ env }}-vpc-subnets'
+      vpcStackName: '{{ prefix }}-{{ env }}-vpc'

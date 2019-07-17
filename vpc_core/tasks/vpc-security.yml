@@ -1,0 +1,11 @@
+---
+- name: Create Base Security Group for the VPC
+  cloudformation:
+    stack_name: '{{ prefix }}-{{ env }}-vpc-security'
+    state: 'present'
+    region: '{{ aws_region }}'
+    disable_rollback: False
+    template: 'vpc_core/files/vpc-security.yaml'
+    template_parameters:
+      name: '{{ prefix }}-{{ env }}'
+      vpcStackName: '{{ prefix }}-{{ env }}-vpc'

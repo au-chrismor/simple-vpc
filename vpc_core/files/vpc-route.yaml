@@ -1,0 +1,201 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+#
+# This template creates an Internet Gateway for the specified VPC
+#
+
+Description: Create Gateway Route Tables
+
+Parameters:
+  name:
+    Type: String
+
+  vpcStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the VPC
+
+  subnetStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the Subnets
+
+  igwStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the Internet Gateway
+
+  natStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the NAT
+
+Resources:
+  routeTablePublic:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Sub ${vpcStackName}-vpcId
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - !Ref name
+              - -PUBLIC
+
+  routeTablePrivate:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Sub ${vpcStackName}-vpcId
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - !Ref name
+              - -PRIVATE
+
+  routeTableRestricted:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Sub ${vpcStackName}-vpcId
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - !Ref name
+              - -RESTRICTED
+
+  routePublic:
+    DependsOn: routeTablePublic
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref routeTablePublic
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: 
+        Fn::ImportValue: !Sub ${igwStackName}-gatewayId
+
+  routePrivate:
+ #   DependsOn: routeTablePrivate
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref routeTablePrivate
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: 
+        Fn::ImportValue: !Sub ${natStackName}-gatewayId
+
+  routeRestricted:
+#    DependsOn: routeTableRestricted
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref routeTableRestricted
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: 
+        Fn::ImportValue: !Sub ${natStackName}-gatewayId
+
+  subnetAssociationPublicA:
+ #   DependsOn: routePublic
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTablePublic
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetPublicA
+
+  subnetAssociationPublicB:
+#    DependsOn: routePublic
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTablePublic
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetPublicB
+
+  subnetAssociationPublicC:
+#    DependsOn: routePublic
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTablePublic
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetPublicC
+
+  subnetAssociationPrivateA:
+#    DependsOn: routePrivate
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTablePrivate
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateA
+
+  subnetAssociationPrivateB:
+#    DependsOn: routePrivate
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTablePrivate
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateB
+
+  subnetAssociationPrivateC:
+#    DependsOn: routePrivate
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTablePrivate
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetPrivateC
+
+  subnetAssociationRestrictedA:
+#    DependsOn: routeRestricted
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableRestricted
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetRestrictedA
+
+  subnetAssociationRestrictedB:
+#    DependsOn: routeRestricted
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableRestricted
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetRestrictedB
+
+  subnetAssociationRestrictedC:
+#    DependsOn: routeRestricted
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableRestricted
+      SubnetId:
+        Fn::ImportValue: !Sub ${subnetStackName}-subnetRestrictedC
+
+Outputs:
+  routeTablePublic:
+    Description: Public Route Table
+    Value: !Ref routeTablePublic
+    Export:
+      Name: !Sub ${AWS::StackName}-routeTablePublic 
+
+  routeTablePrivate:
+    Description: Private Route Table
+    Value: !Ref routeTablePrivate
+    Export:
+      Name: !Sub ${AWS::StackName}-routeTablePrivate
+
+  routeTableRestricted:
+    Description: Restricted Route Table
+    Value: !Ref routeTableRestricted
+    Export:
+      Name: !Sub ${AWS::StackName}-routeTableRestricted
+
+  routePublic:
+    Description: Public Route
+    Value: !Ref routePublic
+    Export:
+      Name: !Sub ${AWS::StackName}-routePublic 
+
+  routePrivate:
+    Description: Private Route
+    Value: !Ref routePrivate
+    Export:
+      Name: !Sub ${AWS::StackName}-routePrivate
+
+  routeRestricted:
+    Description: Restricted Route
+    Value: !Ref routeRestricted
+    Export:
+      Name: !Sub ${AWS::StackName}-routeRestricted

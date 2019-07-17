@@ -1,0 +1,42 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+#
+# This template creates an Internet Gateway for the specified VPC
+#
+
+Description: Create Internet Gateway
+
+Parameters:
+  name:
+    Type: String
+
+  vpcStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the VPC
+
+  subnetStackName:
+    Type: String
+    Description: Name of the CFN Stack which creates the VPC
+
+Resources:
+  internetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref name
+
+  vpcAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref internetGateway
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+
+Outputs:
+  gatewayId:
+    Description: Internet Gateway ID
+    Value: !Ref internetGateway
+    Export:
+      Name: !Sub ${AWS::StackName}-gatewayId

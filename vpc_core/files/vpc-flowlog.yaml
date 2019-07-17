@@ -1,0 +1,47 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Send VPC Flow Logs to S3.
+
+Parameters:
+  name:
+    Type: String
+
+  vpcStackName:
+    Type: String
+    Description: Cloudformation Stack which creates the VPC
+
+Resources:
+  flowLogBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      AccessControl: LogDeliveryWrite
+#      BucketName:
+#        !Join
+#          - '-'
+#          - - !Ref name
+#            - 'vpcflowlogs'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'AES256'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+
+  flowLogs:
+    Type: AWS::EC2::FlowLog
+    Properties:
+      # This needs to be the ARN for the bucket!
+      LogDestination: !GetAtt 'flowLogBucket.Arn'
+      LogDestinationType: 's3'
+      ResourceId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      ResourceType: 'VPC'
+      TrafficType: 'ALL'
+
+
+#Outputs:

@@ -1,0 +1,20 @@
+---
+- name: Create VPC Subnets
+  cloudformation:
+    stack_name: '{{ prefix }}-{{ env }}-vpc-subnets'
+    state: 'present'
+    region: '{{ aws_region }}'
+    disable_rollback: False
+    template: 'vpc_core/files/vpc-subnets.yaml'
+    template_parameters:
+      name: '{{ prefix }}-{{ env }}'
+      privACidr: '{{ vpc_cidr_private_a }}'
+      privBCidr: '{{ vpc_cidr_private_b }}'
+      privCCidr: '{{ vpc_cidr_private_c }}'
+      pubACidr: '{{ vpc_cidr_public_a }}'
+      pubBCidr: '{{ vpc_cidr_public_b }}'
+      pubCCidr: '{{ vpc_cidr_public_c }}'
+      restrACidr: '{{ vpc_cidr_restr_a }}'
+      restrBCidr: '{{ vpc_cidr_restr_b }}'
+      restrCCidr: '{{ vpc_cidr_restr_c }}'
+      vpcStackName: '{{ prefix }}-{{ env }}-vpc'

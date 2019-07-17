@@ -1,0 +1,14 @@
+---
+- name: Create Routing Tables in the VPC
+  cloudformation:
+    stack_name: '{{ prefix }}-{{ env }}-vpc-routes'
+    state: 'present'
+    region: '{{ aws_region }}'
+    disable_rollback: False
+    template: 'vpc_core/files/vpc-route.yaml'
+    template_parameters:
+      igwStackName: '{{ prefix }}-{{ env }}-vpc-igw'
+      name: '{{ prefix }}-{{ env }}'
+      natStackName: '{{ prefix }}-{{ env }}-vpc-nat'
+      subnetStackName: '{{ prefix }}-{{ env }}-vpc-subnets'
+      vpcStackName: '{{ prefix }}-{{ env }}-vpc'
