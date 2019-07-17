@@ -20,3 +20,13 @@ vpc_core creates all the essential stuff you need for a three-tier VPC:
 
 The CloudFormation is pretty basic, so you can easily enough customise it to suit your exact needs.
 
+## What is the VPC Layout
+
+Public-Facing        Private              Restricted
+
+A  B  C              A  B  C              A  B  C
+|  |  |              |  |  |              |  |  |
+|  |  |              |  |  |              |  |  |
++-----+              +-----+
+| IGW |              | NAT |
++-----+              +-----+
