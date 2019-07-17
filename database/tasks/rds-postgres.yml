@@ -1,0 +1,20 @@
+---
+- name: Create PostgreSQL RDS Instance
+  cloudformation:
+    stack_name: '{{ prefix }}-{{ env }}-rds-postgres'
+    state: 'present'
+    region: '{{ aws_region }}'
+    disable_rollback: False
+    template: 'database/files/rds-postgres.yaml'
+    template_parameters:
+      databaseInstanceClass: '{{ db_instance_type }}'
+      databaseName: '{{ db_name }}'
+      databasePassword: '{{ db_password }}'
+      databaseSize: '{{ db_size }}'
+      databaseSnapshot: ''
+      databaseUser: '{{ db_user }}'
+      environmentName: '{{ env }}'
+      name: '{{ prefix }}-{{ env }}'
+      securityStackName: '{{ prefix }}-{{ env }}-vpc-security'
+      subnetGroupStackName: '{{ prefix }}-{{ env }}-rds-subnetgroup'
+       

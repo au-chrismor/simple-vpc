@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MySQL Database Instance
+Description: Postgres Database Instance
 
 Parameters:
   databaseInstanceClass:
@@ -49,21 +49,21 @@ Resources:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
     Properties:
-      Engine: mysql
+      Engine: postgres
+      DBName: !If [ databaseCondition, !Ref 'databaseName', !Ref 'AWS::NoValue' ]
       AllocatedStorage: !If [ databaseCondition, !Ref 'databaseSize', !Ref 'AWS::NoValue' ]
       DBInstanceClass: !Ref databaseInstanceClass
-      DBName: !If [ databaseCondition, !Ref 'databaseName', !Ref 'AWS::NoValue' ]
+      MasterUsername: !If [ databaseCondition, !Ref 'databaseUser', !Ref 'AWS::NoValue' ]
+      MasterUserPassword: !If [ databaseCondition, !Ref 'databasePassword', !Ref 'AWS::NoValue' ]
+      Port: 5432
+      PubliclyAccessible: false
+      MultiAZ: !If [ multiAzCondition, True, False ]
       DBSnapshotIdentifier: !If [ databaseCondition, !Ref 'AWS::NoValue', !Ref 'databaseSnapshot' ]
       DBSubnetGroupName:
         Fn::ImportValue: !Sub '${subnetGroupStackName}-subnetGroup'
-      MasterUsername: !If [ databaseCondition, !Ref 'databaseUser', !Ref 'AWS::NoValue' ]
-      MasterUserPassword: !If [ databaseCondition, !Ref 'databasePassword', !Ref 'AWS::NoValue' ]
-      MultiAZ: !If [ multiAzCondition, False, True ]
-      Port: 3389
-      PubliclyAccessible: false
-      StorageType: gp2
       VPCSecurityGroups:
         - Fn::ImportValue: !Sub '${securityStackName}-vpcSecurityGroup'
+      DeleteAutomatedBackups: True
       Tags:
         -
           Key: Name

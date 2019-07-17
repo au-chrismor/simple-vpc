@@ -11,5 +11,5 @@ Edit site.yml in the root to reflect your desired environment and then run:
 
 ansible-playbook ./site.yml
 
-Execution takes about 5 minutes to complete.
+Execution takes about 5 minutes to complete a VPC.  Adding other resources will require additional time.
 
