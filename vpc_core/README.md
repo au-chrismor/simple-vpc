@@ -22,14 +22,12 @@ The CloudFormation is pretty basic, so you can easily enough customise it to sui
 
 ## What is the VPC Layout
 
-Public-Facing        Private              Restricted
+There are 3 subnet groups (Public, Private and Restricted).
+Public is intended for public-facing services, such as web servers and internet-facing load balancers.
+Private is intended to host application services
+Restricted is intended for more protected services such as databases.
 
-A  B  C              A  B  C              A  B  C
+NACLs are used to restrict traffic between these zones as shown:
 
-|  |  |              |  |  |              |  |  |
+Public <--> Private <--> Restricted
 
-|  |  |              |  |  |              |  |  |
-
-+-----+              +-----+
-| IGW |              | NAT |
-+-----+              +-----+
