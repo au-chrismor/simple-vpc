@@ -25,8 +25,11 @@ The CloudFormation is pretty basic, so you can easily enough customise it to sui
 Public-Facing        Private              Restricted
 
 A  B  C              A  B  C              A  B  C
+
 |  |  |              |  |  |              |  |  |
+
 |  |  |              |  |  |              |  |  |
+
 +-----+              +-----+
 | IGW |              | NAT |
 +-----+              +-----+
