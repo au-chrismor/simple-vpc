@@ -1,0 +1,11 @@
+---
+- name: Create RDS Subnet Group
+  cloudformation:
+    stack_name: '{{ prefix }}-{{ env }}-rds-subnetgroup'
+    state: 'present'
+    region: '{{ aws_region }}'
+    disable_rollback: False
+    template: 'database/files/rds-subnet-group.yaml'
+    template_parameters:
+      name: '{{ prefix }}-{{ env }}'
+      subnetStackName: '{{ prefix }}-{{ env }}-vpc-subnets'

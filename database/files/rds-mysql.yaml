@@ -1,0 +1,80 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Oracle Database Instance
+
+Parameters:
+  databaseInstanceClass:
+    Type: String
+
+  databaseName:
+    Type: String
+
+  databasePassword:
+    Type: String
+    NoEcho: true
+
+  securityStackName:
+    Type: String
+
+  subnetGroupStackName:
+    Type: String
+
+  databaseSize:
+    Type: String
+    Default: 5
+
+  databaseSnapshot:
+    Type: String
+
+  databaseUser:
+    Type: String
+    NoEcho: true
+
+  environmentName:
+    Type: String
+    AllowedValues: [ nonprod, prod ]
+
+  name:
+    Type: String
+
+Conditions:
+  databaseCondition:
+    !Equals [ !Ref databaseSnapshot, ""]
+
+  multiAzCondition:
+    !Equals [ !Ref environmentName, "prod"]
+
+Resources:
+  database:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      Engine: mysql
+      DBName: !If [ databaseCondition, !Ref 'databaseName', !Ref 'AWS::NoValue' ]
+      AllocatedStorage: !If [ databaseCondition, !Ref 'databaseSize', !Ref 'AWS::NoValue' ]
+      DBInstanceClass: !Ref databaseInstanceClass
+      MasterUsername: !If [ databaseCondition, !Ref 'databaseUser', !Ref 'AWS::NoValue' ]
+      MasterUserPassword: !If [ databaseCondition, !Ref 'databasePassword', !Ref 'AWS::NoValue' ]
+      Port: 3389
+      PubliclyAccessible: false
+      MultiAZ: !If [ multiAzCondition, True, False ]
+      DBSnapshotIdentifier: !If [ databaseCondition, !Ref 'AWS::NoValue', !Ref 'databaseSnapshot' ]
+      DBSubnetGroupName:
+        Fn::ImportValue: !Sub '${subnetGroupStackName}-subnetGroup'
+      VPCSecurityGroups:
+        - Fn::ImportValue: !Sub '${securityStackName}-vpcSecurityGroup'
+      Tags:
+        -
+          Key: Name
+          Value: !Sub ${environmentName} Database host
+        
+Outputs:
+  dbEndpoint:
+    Value: !GetAtt [ database, Endpoint.Address ]
+    Export:
+      Name: !Sub '${AWS::StackName}-dbEndpoint'
+
+  dbPort:
+    Value: !GetAtt [ database, Endpoint.Port ]
+    Export:
+      Name: !Sub '${AWS::StackName}-dbPort'
