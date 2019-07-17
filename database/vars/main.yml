@@ -1,0 +1,6 @@
+db_instance_type: 'db.t2.micro'
+db_name: 'sampledb'
+db_password: 'D0ntU5e!'
+db_size: 20
+db_user: 'dbuser'
+   

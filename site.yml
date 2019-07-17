@@ -1,5 +1,6 @@
 ---
 - hosts: localhost
+  gather_facts: True
   vars:
     prefix: 'cm'
     aws_region: 'ap-southeast-2'
@@ -21,5 +22,6 @@
     app_cidr: '1.129.104.85/32'
   roles:
     - vpc_core
+#    - database
 
 
