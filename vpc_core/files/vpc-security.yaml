@@ -30,6 +30,110 @@ Resources:
               - ''
               - - !Ref name
                 - '-VPC-SG'
+  
+  healthcheckSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access for Route53 healthcheckSG
+      VpcId:
+        Fn::ImportValue: !Sub '${vpcStackName}-vpcId'
+      SecurityGroupIngress:
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.248.220.1/32'
+          Description: Tokyo
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.250.253.193/32'
+          Description: Tokyo
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.255.254.193/32'
+          Description: Singapore
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.251.31.161/32'
+          Description: Singapore
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.252.79.129/32'
+          Description: Sydney
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.252.254.225/32'
+          Description: Sydney
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '176.34.159.193/32'
+          Description: Ireland
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.228.16.33/32'
+          Description: Ireland
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.232.40.97/32'
+          Description: Sao Paulo
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '177.71.207.129/32'
+          Description: Sao Paulo
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.243.31.193/32'
+          Description: N.Virginia
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '107.23.255.33/32'
+          Description: N.Virginia
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.183.255.161/32'
+          Description: N.California
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.241.32.65/32'
+          Description: N.California
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.244.52.225/32'
+          Description: Oregon
+        -
+          IpProtocol: TCP
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '54.245.168.1/32'
+          Description: Oregon
 
 Outputs:
   vpcSecurityGroup:

@@ -1,4 +1,4 @@
-db_instance_type: 'db.t2.micro'
+db_instance_type: 'db.t3.micro'
 db_name: 'sampledb'
 db_password: !vault |
   $ANSIBLE_VAULT;1.2;AES256;dev
